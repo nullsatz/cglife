@@ -66,18 +66,20 @@ public class Life {
 	}
 
 	public int[][] advanceHistory() {
-		int[][] newField = history.lastElement().clone();
+		int[][] newFrame = new int[nrows][ncols];
+		int[][] oldFrame = history.lastElement();
 		for(int i = 0; i < nrows; i++) {
 			for(int j = 0; j < nrows; j++) {
+				newFrame[i][j] = oldFrame[i][j];
 				int n = getNborSum(i, j);
 				if((n < 2) || (n > 3))
-					newField[i][j] = 0;
+					newFrame[i][j] = 0;
 				else if(n == 3)
-					newField[i][j] = 1;
+					newFrame[i][j] = 1;
 			}
 		}
-		history.add(newField);
-		return(newField);
+		history.add(newFrame);
+		return(newFrame);
 	}
 
 	public BufferedImage frameToImage(int time, int[] bg, int[] fg) {
@@ -97,24 +99,34 @@ public class Life {
 		}
 		BufferedImage frameImg = new BufferedImage(ncols, nrows,
 			BufferedImage.TYPE_INT_RGB);
-		frameImg.setRGB(0, 0, ncols, nrows, rgbPixels, 0, ncols * 3);
+		frameImg.setRGB(0, 0, ncols, nrows, rgbPixels, 0, ncols);
 		return(frameImg);
 
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, InterruptedException {
 		Life a = new Life(200, 200);
+		for(int i = 1; i < 500; i++)
+			a.advanceHistory();
+
 
 		int[] bg = {0, 0, 0};
 		int[] fg =  {255, 0, 0};
-		Image frame = a.frameToImage(0, bg, fg);
+		BufferedImage img = a.frameToImage(0, bg, fg);
 
 		JLabel jl = new JLabel();
-		jl.setIcon(new ImageIcon(frame));
+		jl.setIcon(new ImageIcon(img));
 
 		JFrame jf = new JFrame();
 		jf.add(jl);
 		jf.pack();
 		jf.setVisible(true);
+
+		for(int i = 1; i < 1000; i++) {
+			img = a.frameToImage(i, bg, fg);
+			jl.setIcon(new ImageIcon(img));
+			jl.paintImmediately(0, 0, 200, 200);
+			Thread.sleep(300);
+		}
 	}
 }
