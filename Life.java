@@ -84,7 +84,7 @@ public class Life {
 
 	public BufferedImage frameToImage(int time, int[] bg, int[] fg) {
 		int[][] frame = history.elementAt(time);
-		int[] rgbPixels = new int[nrows * ncols * 3];
+		int[] rgbPixels = new int[(2 * nrows) * (2 * ncols) * 3];
 		for(int i = 0; i < nrows; i++) {
 			for(int j = 0; j < ncols; j++) {
 				int[] pixelColor;
@@ -104,29 +104,40 @@ public class Life {
 
 	}
 
-	public static void main(String[] args) throws IOException, InterruptedException {
-		Life a = new Life(200, 200);
-		for(int i = 1; i < 500; i++)
+	public static void main(String[] args)
+		throws IOException, InterruptedException {
+
+		int dim = 100;
+		int time = 100;
+		int pause = 200;
+
+		int[] bg = {0, 0, 0}; // black
+		int[] fg =  {255, 0, 0}; // blue
+
+		Life a = new Life(dim, dim);
+		for(int i = 1; i < time; i++)
 			a.advanceHistory();
 
-
-		int[] bg = {0, 0, 0};
-		int[] fg =  {255, 0, 0};
 		BufferedImage img = a.frameToImage(0, bg, fg);
+		Image bigImg = img.getScaledInstance(2 * dim, 2 * dim,
+			Image.SCALE_DEFAULT);
 
 		JLabel jl = new JLabel();
-		jl.setIcon(new ImageIcon(img));
+		jl.setIcon(new ImageIcon(bigImg));
 
 		JFrame jf = new JFrame();
 		jf.add(jl);
 		jf.pack();
 		jf.setVisible(true);
 
-		for(int i = 1; i < 1000; i++) {
+		for(int i = 1; i < time; i++) {
 			img = a.frameToImage(i, bg, fg);
-			jl.setIcon(new ImageIcon(img));
-			jl.paintImmediately(0, 0, 200, 200);
-			Thread.sleep(300);
+			bigImg = img.getScaledInstance(2 * dim, 2 * dim,
+				Image.SCALE_DEFAULT);
+
+			jl.setIcon(new ImageIcon(bigImg));
+			jl.paintImmediately(0, 0, 2 * dim, 2 * dim);
+			Thread.sleep(pause);
 		}
 	}
 }
